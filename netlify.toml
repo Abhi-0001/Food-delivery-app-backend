@@ -2,7 +2,7 @@
 [build]
   command = "npm run build"
   functions = "netlify/functions"
-  publish = "dist"
+  publish = "dist/index.js"
 
 [functions]
   external_node_modules = ["express"]
