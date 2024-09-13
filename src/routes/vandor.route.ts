@@ -1,43 +1,48 @@
 import { Router } from "express";
 import {
   addFood,
+  addOffer,
+  editOffer,
+  getCurrentOrders,
   getFoods,
+  getOffers,
+  getOrderDetails,
   getVandorProfile,
   loginVandor,
+  processOrder,
   updateCoverImage,
   updateProfile,
   updateService,
 } from "../controllers";
 import { authenticate } from "../middlewares";
-import multer from "multer";
-
-// file upload middleware with multer
-// *************************
-const imageStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "src/assets/images");
-  },
-  filename: function (req, file, cb) {
-    const fileName = Date.now().toString() + "_" + file.originalname;
-    cb(null, fileName);
-  },
-});
-const uploadImages = multer({ storage: imageStorage }).array("images", 10);
-// *************************
+import { uploadImages } from "../middlewares";
 
 const router = Router();
 
 router.post("/login", loginVandor);
 
-// authenticated routes after this
 router.use(authenticate);
+//*** authenticated routes after this
 
+// *** PROFILE
 router.get("/profile", getVandorProfile);
 router.patch("/profile", updateProfile);
 router.patch("/service", updateService);
-
 router.patch("/coverimage", uploadImages, updateCoverImage);
+
+// *** FOODS
 router.post("/food", uploadImages, addFood);
 router.get("/foods", getFoods);
+
+//****  OFFERS
+router.post("/offer", addOffer);
+router.get("/offers", getOffers);
+router.put("/offer/:id", editOffer);
+
+// ***  ORDERs
+
+router.get("/order", getCurrentOrders);
+router.get("/order/:id", getOrderDetails);
+router.patch("/order/:id/process", processOrder);
 
 export { router as VandorRouter };

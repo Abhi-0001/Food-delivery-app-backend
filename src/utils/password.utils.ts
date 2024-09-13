@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
-import { SALT_ROUNDS } from "../utils/constants";
+import { SALT_ROUNDS } from "./constants";
 import { AuthPayload } from "../dto";
 
 async function generateSalt() {
@@ -24,7 +24,8 @@ async function generateLoginToken(payload: AuthPayload) {
 
 async function validateToken(req: Request, res: Response) {
   const signature = <string>req.headers["authorization"];
-  const token = signature.split(" ")[1];
+  if (!signature) return false;
+  const token = signature?.split(" ")[1];
 
   if (token) {
     try {

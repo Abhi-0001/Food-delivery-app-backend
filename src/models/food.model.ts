@@ -15,12 +15,12 @@ interface FoodDoc extends Document {
 const FoodSchema = new Schema(
   {
     vandorId: { type: String },
-    name: { type: String, required: true },
+    name: { type: String, require: true },
     description: { type: String },
     category: { type: String },
     foodType: { type: [String] },
     readyTime: { type: Number },
-    price: { type: Number, required: true },
+    price: { type: Number, require: true },
     rating: { type: Number },
     images: { type: [String] },
   },

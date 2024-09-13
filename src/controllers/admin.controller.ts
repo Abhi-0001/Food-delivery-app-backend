@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { CreateVandorInput } from "../dto";
-import { Vandor } from "../models";
+import { DeliveryUser, Vandor } from "../models";
 import { generateHshPassword, generateSalt } from "../utils";
+import { Transaction } from "../models/transaction.model";
 
 // helper functions
 async function findVandor(id?: string | undefined, email?: string) {
@@ -81,6 +82,55 @@ async function getVandorById(req: Request, res: Response) {
     console.log("ERROR🚀 :", err);
     res.status(500).json({ message: err });
   }
+}
+
+export async function getTxns(req: Request, res: Response) {
+  try {
+    const txns = await Transaction.find();
+
+    res.status(200).json(txns);
+  } catch (err) {
+    console.log("ERROR 🚀:", err);
+    res.status(500).json({ message: err });
+  }
+}
+
+export async function getTxnById(req: Request, res: Response) {
+  try {
+    const txnId = req.params.id;
+    const txn = await Transaction.findById(txnId);
+    if (!txn) return res.status(401).json({ message: "txn could not found" });
+
+    return res.status(200).json(txn);
+  } catch (err) {
+    console.log("ERROR🚀 :", err);
+    res.status(500).json({ message: err });
+  }
+}
+
+export async function verifyDeliveryUser(req: Request, res: Response) {
+  const { id, status } = req.body;
+
+  if (id) {
+    const deliveryUser = await DeliveryUser.findById(id);
+    deliveryUser.isVerified = status;
+
+    const result = await deliveryUser.save();
+    return res.status(200).json(result);
+  }
+
+  return res
+    .status(301)
+    .json({ message: "no delivery user exist with this id." });
+}
+export async function getDeliveryUsers(req: Request, res: Response) {
+  const deliveryUser = await DeliveryUser.find();
+
+  if (deliveryUser) {
+    return res.status(200).json(deliveryUser);
+  }
+
+  return res.status(301).json({ message: "no any delivery users." });
 }
 
 export { addVandor, getVandors, getVandorById, findVandor };

@@ -1,7 +1,7 @@
 import express, { Application } from "express";
 import dotenv from "dotenv";
 import { BASE_URL } from "../utils/constants";
-import { AdminRouter } from "../routes";
+import { AdminRouter, deliveryRouter } from "../routes";
 import { VandorRouter } from "../routes";
 import { shoppingRouter } from "../routes";
 import { customerRouter } from "../routes";
@@ -15,6 +15,7 @@ async function expressService(app: Application) {
   app.use(`${BASE_URL}/admin`, AdminRouter);
   app.use(`${BASE_URL}/vandor`, VandorRouter);
   app.use(`${BASE_URL}/customer`, customerRouter);
+  app.use(`${BASE_URL}/delivery`, deliveryRouter);
 }
 
 export default expressService;

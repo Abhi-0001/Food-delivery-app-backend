@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Vandor } from "../models/vandor.model";
 import { FoodDoc } from "../models/food.model";
+import { Offer } from "../models/offer.model";
 
 /**********  SEARCH FOOD    ************ */
 async function searchFood(req: Request, res: Response, next: NextFunction) {
@@ -121,6 +122,20 @@ async function getRestaurantById(
     return res.status(200).json(vandor);
   }
   return res.status(400).json({ message: "No restaurant exist with this id" });
+}
+
+export async function getAvailableOffers(req: Request, res: Response) {
+  try {
+    const pincode = req.params.pincode;
+    const availableOffers = await Offer.find({ pincode, isActive: true });
+
+    if (!availableOffers.length)
+      throw new Error("Offers not available for this pincode right Now!!!");
+    return res.status(200).json(availableOffers);
+  } catch (err) {
+    console.error(err);
+    return res.status(301).json({ message: err.message });
+  }
 }
 
 export {

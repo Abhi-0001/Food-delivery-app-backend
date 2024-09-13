@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   getFoodAvailability,
   getFoodIn30Min,
+  getAvailableOffers,
   getRestaurantById,
   getTopRestaurants,
   searchFood,
@@ -15,8 +16,12 @@ router.get("/:pincode", getFoodAvailability);
 /********* FOOD IN 30 MIN WITH PINCODE ********** */
 router.get("/food-in-30-min/:pincode", getFoodIn30Min);
 
-/********* SEARCH FOOD WITH PINCODE ********** */
+// ******** SEARCH FOOD WITH PINCODE ********** */
 router.get("/search/:pincode", searchFood);
+
+// *********** SEARCH OFFERS WITH PINCODE **********/
+
+router.get("/offers/:pincode", getAvailableOffers);
 
 /********* TOP RESTAURANTS WITH PINCODE ********** */
 router.get("/top-restaurant/:pincode", getTopRestaurants);

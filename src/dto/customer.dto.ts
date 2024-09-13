@@ -37,3 +37,20 @@ export {
   CustomerLoginInput,
   CustomerUpdateInput,
 };
+
+export class CreateDeliveryUserInputs {
+  @IsEmail()
+  email: string;
+
+  @Length(8)
+  phone: string;
+
+  @Length(8, 20)
+  password: string;
+
+  firstName: string;
+  lastName?: string;
+  address: string;
+  pincode: string;
+  isAvailable: boolean;
+}
