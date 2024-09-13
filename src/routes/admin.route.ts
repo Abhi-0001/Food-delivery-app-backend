@@ -18,7 +18,7 @@ router.get("/vandor/:id", getVandorById);
 router.get("/transaction", getTxns);
 router.get("/transaction/:id", getTxnById);
 
-router.get("/delivery/verify", verifyDeliveryUser);
+router.post("/delivery/verify", verifyDeliveryUser);
 router.get("/delivery/users", getDeliveryUsers);
 
 export { router as AdminRouter };
