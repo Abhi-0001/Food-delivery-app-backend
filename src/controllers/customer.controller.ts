@@ -8,7 +8,14 @@ import {
   orderInputs,
 } from "../dto/index";
 import { validate } from "class-validator";
-import { Customer, CustomerDoc, Food, Order } from "../models";
+import {
+  Customer,
+  CustomerDoc,
+  DeliveryUser,
+  Food,
+  Order,
+  Vandor,
+} from "../models";
 import {
   generateHshPassword,
   generateLoginToken,
@@ -346,6 +353,31 @@ async function validateTransaction(txnId: string) {
   return { status: false, currentTxn };
 }
 
+async function assignOrderForDelivery(orderId: string, vandorId: string) {
+  const orderToPlace = await Order.findById(orderId);
+  if (orderToPlace) {
+    const vandor = await Vandor.findById(vandorId);
+
+    if (!vandor) throw Error("invalid vandor Id");
+    const { pincode, lat, lng } = vandor;
+    const deliveryPerson = await DeliveryUser.find({
+      pincode,
+      lat,
+      lng,
+      isVerified: true,
+    });
+
+    if (deliveryPerson && deliveryPerson.length) {
+      orderToPlace.deliveryId = deliveryPerson[0]._id.toString();
+      const response = await orderToPlace.save();
+
+      console.log(response);
+
+      // notify the vandor about new order
+    }
+  } else throw Error("invalid order Id to be placed");
+}
+
 export async function createOrder(
   req: Request,
   res: Response,
@@ -359,9 +391,10 @@ export async function createOrder(
   // * validate txn
   const { status, currentTxn } = await validateTransaction(txnId);
   if (!status)
-    return res
-      .status(500)
-      .json({ message: "order could not be placed please try again" });
+    return res.status(500).json({
+      message:
+        "Due to incomplete Transaction order could not be placed please try again",
+    });
 
   if (customer) {
     // * find customer's profile
@@ -380,6 +413,7 @@ export async function createOrder(
       .exec();
 
     let vandorId: string;
+
     foods.forEach((foodItem) => {
       items.forEach(({ id, unit }) => {
         if (id === String(foodItem._id)) {
@@ -420,6 +454,8 @@ export async function createOrder(
 
     // * empty the cart
     profile.cart = [] as any;
+
+    assignOrderForDelivery(String(order._id), vandorId);
 
     //   * save customer profile
     profile.orders.push(order);
